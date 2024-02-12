@@ -17,7 +17,11 @@ Players.LocalPlayer.Idled:connect(function()
 end)
 
 --=====================================================================================================--
-local HUGEDATA = {}
+local HUGEDATA = {
+    ["Huge Hologram Axolotl"] = {"cb8eda4d6593498e87e9901a5af48163", 79867890, "Huge Skeleton"},
+    ["Huge Skeleton"] = {"e23961d8fb554bfdb6a4419352994eea", 80560432, "Huge BIG Maskot"},
+    ["Huge BIG Maskot"] = {"ef4239db53904f0b9ff211c3dd330558", 81780654, "Huge Hologram Axolotl"}
+}
 --=====================================================================================================--
 
 local function listHuge(hname)
