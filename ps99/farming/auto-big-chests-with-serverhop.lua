@@ -181,7 +181,7 @@ for _, key in ipairs(sortedKeys) do
             end)
 
             if timer ~= nil then
-                if timer == "00:00" or timer == "09:59" then
+                if timer == "00:00" then
                     print(zoneName .. " chest is available")
                     breakChest(zoneName)
                 else
