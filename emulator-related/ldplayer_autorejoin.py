@@ -3,7 +3,7 @@ import subprocess, time
 
 adb = "C:/LDPlayer/LDPlayer9/adb.exe"
 launch_times = {}
-relaunch_interval = 1800
+relaunch_interval = 300
 
 
 def runADBCommand(command):
