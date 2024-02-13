@@ -1,6 +1,6 @@
 local SERVER_HOP = true -- server hop after breaking all chests
 local SERVER_HOP_DELAY = 10 -- delay in seconds before server hopping (set to 0 for no delay)
-local CHEST_BREAK_DELAY = 4 -- delay in seconds before breaking next chest (set to 0 for no delay)
+local CHEST_BREAK_DELAY = 2 -- delay in seconds before breaking next chest (set to 0 for no delay)
 
 
 local BigChests = {
