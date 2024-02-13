@@ -149,7 +149,7 @@ local function breakChest(zone)
 end
 
 task.wait(10)
-game:GetService("RunService"):Set3dRenderingEnabled(false)
+-- game:GetService("RunService"):Set3dRenderingEnabled(false)
 
 require(Library.Client.PlayerPet).CalculateSpeedMultiplier = function()
     return 200
