@@ -1,6 +1,3 @@
---[[
-Credits: Aniqami#0001(@aniqami)
-]]
 local Lib = require(game.ReplicatedStorage:WaitForChild('Library'))
 
 local function findItem(Type, Id)
