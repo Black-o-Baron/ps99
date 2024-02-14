@@ -1,6 +1,3 @@
---[[
-Created by kittyware -- https://discord.gg/kittyware
-]]
 getgenv().config = {
     autoFish = true,
     placetoFish = "AdvancedFishing",
