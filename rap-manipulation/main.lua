@@ -10,47 +10,10 @@ local PlayerData = ""
 local HugeData = {}
 local signal
 
---[[
-    {
-        ["name"] = "<FULL_HUGE_NAME>"
-        ["pt"] = <REMOVE KEY FOR NORMAL> | 1 - gold | 2 - rainbow,
-        ["sh"] = <REMOVE KEY FOR NON-SHINY> | true - shiny
-        ["price"] = unit gem value
-    }
-]]
-
-local config = {
-    ["players"] = {"LoneByte_Alt3"},
-    ["huges"] = {
-        {
-            ["name"] = "Huge Painted Cat",
-            ["pt"] = 1,
-            ["price"] = 79867890
-        },
-        {
-            ["name"] = "Huge Rainbow Slime",
-            ["price"] = 80560432
-        },
-        {
-            ["name"] = "Huge Hell Rock",
-            ["pt"] = 1,
-            ["price"] = 81780654
-        }
-    },
-    ["misc"] = {
-        ["stopOnPurchaseFail"] = false
-    }
-}
-
 local function listHuge(hname)
+    print("listHuge(): hname: " .. tostring(hname))
     if hname then
-        print("listHuge(): listHuge: " .. tostring(hname))
-        local args = {
-            [1] = HugeData[hname][1],
-            [2] = HugeData[hname][2],
-            [3] = 1
-        }
-        local listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(unpack(args))
+        local listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(HugeData[hname][1], HugeData[hname][2], 1)
         print("listHuge(): listingStatus: " .. tostring(listingStatus))
     else
         print("listHuge(): listingStatus: false -> improper args")
@@ -126,9 +89,7 @@ local function init()
     return true
 end
 
-repeat
-    task.wait()
-until init()
+repeat task.wait() until init()
 
 print("--> BOOTH SNIPER READY <--")
 
