@@ -74,6 +74,8 @@ local function init()
     return true
 end
 
+print("SCRIPT STARTED...")
+
 repeat task.wait() until init()
 
 Booths_Broadcast.OnClientEvent:Connect(function(username, message)
