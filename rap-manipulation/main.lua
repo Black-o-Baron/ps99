@@ -11,6 +11,20 @@ local Booths_Broadcast = ReplicatedStorage.Network:WaitForChild("Booths_Broadcas
 local PlayerData = ""
 local signal
 
+local function claimBooth()
+    print("claimBooth(): Started...")
+    local claimStatus
+    for i = 1, 25, 1 do
+        claimStatus = ReplicatedStorage.Network.Booths_ClaimBooth:InvokeServer(tostring(i))
+        print("claimBooth(): i: " .. tostring(i) .. " | claimStatus: " .. tostring(claimStatus))
+        if claimStatus then
+            print("claimBooth(): Booth claimed!")
+            break
+        end
+    end
+    return true
+end
+
 local function listHuge(pos)
     print("listHuge(): pos: " .. tostring(pos))
     if not pos then pos = 1 end
@@ -49,6 +63,9 @@ local function tryPurchase(uid, playerid, buytimestamp, pos)
             end
         end)
         repeat task.wait() until signal == nil
+
+        task.wait(math.random(3, 6)) -- Delay before purchase
+
         local purchaseStatus, purchaseMessage = ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         print("tryPurchase(): purchaseStatus: " .. tostring(purchaseStatus) .. " | purchaseMessage: " .. tostring(purchaseMessage))
         if purchaseStatus then listHuge(pos) end
@@ -64,6 +81,10 @@ local function init()
         PlayerData = PlayerData .. tostring(Players[config["players"][i]].UserId) .. "_"
     end
     print("init(): PlayerData: " .. PlayerData)
+
+    -- Initialize auto claim booth
+    print("init(): Initialize auto claim booth...")
+    repeat task.wait() until claimBooth()
 
     -- Check for starting player, if true, add the first huge
     print("init(): Initialize add first huge...")
