@@ -15,7 +15,7 @@ local function listHuge(pos)
     print("listHuge(): pos: " .. tostring(pos))
     if not pos then pos = 1 end
     local Pet = Library.Save.Get().Inventory.Pet
-    local hcount = #config["huges"]
+    local hcount, listingStatus = #config["huges"], false
     local hpos
     for i = pos, hcount+pos-1, 1 do
         hpos = (i%hcount)+1
@@ -23,12 +23,13 @@ local function listHuge(pos)
             if string.find(petData["id"], "Huge") and string.find(petData["id"], config["huges"][hpos]["name"]) then
                 print("listHuge(): hpos: " .. tostring(hpos) .. " | config: " .. tostring(config["huges"][hpos]["pt"]) .. ", " .. tostring(config["huges"][hpos]["sh"]) .. " | petData: " .. tostring(petData["pt"]) .. ", " .. tostring(petData["sh"]))
                 if ((not config["huges"][hpos]["pt"] and not petData["pt"]) or (config["huges"][hpos]["pt"] and petData["pt"] and config["huges"][hpos]["pt"] == petData["pt"])) and ((not config["huges"][hpos]["sh"] and not petData["sh"]) or (config["huges"][hpos]["sh"] and petData["sh"] and config["huges"][hpos]["sh"] == petData["sh"])) then
-                    local listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, config["huges"][hpos]["price"], 1)
+                    listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, config["huges"][hpos]["price"], 1) or false
                     print("listHuge(): listingStatus: " .. tostring(listingStatus))
-                    return listingStatus
+                    break
                 end
             end
         end
+        if listingStatus then break end
     end
 end
 
