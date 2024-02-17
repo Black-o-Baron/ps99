@@ -64,7 +64,7 @@ local function tryPurchase(uid, playerid, buytimestamp, pos)
         end)
         repeat task.wait() until signal == nil
 
-        task.wait(math.random(3, 6)) -- Delay before purchase
+        task.wait(math.random(2, 4)) -- Delay before purchase
 
         local purchaseStatus, purchaseMessage = ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         print("tryPurchase(): purchaseStatus: " .. tostring(purchaseStatus) .. " | purchaseMessage: " .. tostring(purchaseMessage))
