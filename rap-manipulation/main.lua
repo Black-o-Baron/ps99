@@ -23,8 +23,9 @@ local function listHuge(pos)
             if string.find(petData["id"], "Huge") and string.find(petData["id"], config["huges"][hpos]["name"]) then
                 print("listHuge(): hpos: " .. tostring(hpos) .. " | config: " .. tostring(config["huges"][hpos]["pt"]) .. ", " .. tostring(config["huges"][hpos]["sh"]) .. " | petData: " .. tostring(petData["pt"]) .. ", " .. tostring(petData["sh"]))
                 if ((not config["huges"][hpos]["pt"] and not petData["pt"]) or (config["huges"][hpos]["pt"] and petData["pt"] and config["huges"][hpos]["pt"] == petData["pt"])) and ((not config["huges"][hpos]["sh"] and not petData["sh"]) or (config["huges"][hpos]["sh"] and petData["sh"] and config["huges"][hpos]["sh"] == petData["sh"])) then
-                    listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, config["huges"][hpos]["price"], 1) or false
+                    listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, config["huges"][hpos]["price"], 1)
                     print("listHuge(): listingStatus: " .. tostring(listingStatus))
+                    listingStatus = true
                     break
                 end
             end
@@ -44,15 +45,10 @@ local function tryPurchase(uid, playerid, buytimestamp, pos)
         end)
         repeat task.wait() until signal == nil
         local purchaseStatus, purchaseMessage = ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
-        print("tryPurchase(): purchaseStatus: " .. tostring(purchaseStatus))
-        if purchaseStatus or not config["misc"]["stopOnPurchaseFail"] then
-            listHuge(pos)
-        end
+        print("tryPurchase(): purchaseStatus: " .. tostring(purchaseStatus) .. " | purchaseMessage: " .. tostring(purchaseMessage))
+        if purchaseStatus then listHuge(pos) end
     else
         print("tryPurchase(): purchaseStatus: false -> improper args")
-        if not config["misc"]["stopOnPurchaseFail"] then
-            listHuge(pos)
-        end
     end
 end
 
@@ -105,7 +101,7 @@ Booths_Broadcast.OnClientEvent:Connect(function(username, message)
             print("Booths_Broadcast: listing: " .. tostring(playerid) .. " | " .. tostring(uid) .. " | " .. tostring(item) .. " | " .. tostring(unitGems))
 
             for i = 1, #config["huges"], 1 do
-                if string.find(PlayerData, tostring(playerid)) and string.find(item, config["huges"][i]["name"]) and unitGems == config["huges"][i]["price"] then
+                if tostring(playerid) ~= tostring(Players.LocalPlayer.UserId) and string.find(PlayerData, tostring(playerid)) and string.find(item, config["huges"][i]["name"]) and unitGems == config["huges"][i]["price"] then
                     print("Booths_Broadcast: match found. calling tryPurchase...")
                     coroutine.wrap(tryPurchase)(uid, playerid, buytimestamp, i)
                 end
