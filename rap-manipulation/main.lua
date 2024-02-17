@@ -6,7 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 print("ReplicatedStorage")
 local Library = require(ReplicatedStorage:WaitForChild('Library'))
 print("Library")
-local Booths_Broadcast = require(ReplicatedStorage.Network:WaitForChild("Booths_Broadcast"))
+local Booths_Broadcast = ReplicatedStorage.Network:WaitForChild("Booths_Broadcast")
 print("Booths_Broadcast")
 local PlayerData = ""
 local signal
