@@ -1,13 +1,13 @@
 game.Players.LocalPlayer.PlayerScripts.Scripts.Core["Idle Tracking"].Enabled = false
 
-if not config then
-    os.exit()
-end
-
 local Players = game:GetService("Players")
+print("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+print("ReplicatedStorage")
 local Library = require(ReplicatedStorage:WaitForChild('Library'))
+print("Library")
 local Booths_Broadcast = require(ReplicatedStorage.Network:WaitForChild("Booths_Broadcast"))
+print("Booths_Broadcast")
 local PlayerData = ""
 local signal
 
