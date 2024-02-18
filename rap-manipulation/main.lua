@@ -1,8 +1,8 @@
-game.Players.LocalPlayer.PlayerScripts.Scripts.Core["Idle Tracking"].Enabled = false
-
-if not config then
-    os.exit()
+if not game:IsLoaded() then
+    game.Loaded:Wait()
 end
+
+game.Players.LocalPlayer.PlayerScripts.Scripts.Core["Idle Tracking"].Enabled = false
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -10,6 +10,15 @@ local Library = require(ReplicatedStorage:WaitForChild('Library'))
 local Booths_Broadcast = ReplicatedStorage.Network:WaitForChild("Booths_Broadcast")
 local PlayerData = ""
 local signal
+
+if not config then os.exit() end
+
+local VirtualUser = game:GetService("VirtualUser")
+Players.LocalPlayer.Idled:connect(function()
+   VirtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+   task.wait(1)
+   VirtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+end)
 
 local function claimBooth()
     print("claimBooth(): Started...")
