@@ -1,53 +1,103 @@
-if not game:IsLoaded() then
-    game.Loaded:Wait()
+game.Players.LocalPlayer.PlayerScripts.Scripts.Core["Idle Tracking"].Enabled = false
+
+if not config then
+    os.exit()
 end
 
-task.wait(15)
-game.Players.LocalPlayer.PlayerScripts.Scripts.Core["Idle Tracking"].Enabled = false
-local Booths_Broadcast = game:GetService("ReplicatedStorage").Network:WaitForChild("Booths_Broadcast")
-local Players = game:GetService('Players')
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Library = require(ReplicatedStorage:WaitForChild('Library'))
+local Booths_Broadcast = ReplicatedStorage.Network:WaitForChild("Booths_Broadcast")
+local PlayerData = ""
 local signal
 
-local vu = game:GetService("VirtualUser")
-Players.LocalPlayer.Idled:connect(function()
-    vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-    task.wait(1)
-    vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-end)
-
---=====================================================================================================--
-local HUGEDATA = {
-    ["Huge Hologram Axolotl"] = {"cb8eda4d6593498e87e9901a5af48163", 79867890, "Huge Skeleton"},
-    ["Huge Skeleton"] = {"e23961d8fb554bfdb6a4419352994eea", 80560432, "Huge BIG Maskot"},
-    ["Huge BIG Maskot"] = {"ef4239db53904f0b9ff211c3dd330558", 81780654, "Huge Hologram Axolotl"}
-}
---=====================================================================================================--
-
-local function listHuge(hname)
-    local args = {
-        [1] = HUGEDATA[hname][1],
-        [2] = HUGEDATA[hname][2],
-        [3] = 1
-    }
-    ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(unpack(args))
+local function claimBooth()
+    print("claimBooth(): Started...")
+    local claimStatus
+    for i = 1, 25, 1 do
+        claimStatus = ReplicatedStorage.Network.Booths_ClaimBooth:InvokeServer(tostring(i))
+        print("claimBooth(): i: " .. tostring(i) .. " | claimStatus: " .. tostring(claimStatus))
+        if claimStatus then
+            print("claimBooth(): Booth claimed!")
+            break
+        end
+    end
+    return true
 end
 
-local function tryPurchase(uid, playerid, buytimestamp, hname)
-    signal = game:GetService("RunService").Heartbeat:Connect(function()
-        if buytimestamp < workspace:GetServerTimeNow() then
-            signal:Disconnect()
-            signal = nil
+local function listHuge(pos)
+    print("listHuge(): pos: " .. tostring(pos))
+    if not pos then pos = 1 end
+    local Pet = Library.Save.Get().Inventory.Pet
+    local hcount, listingStatus = #config["huges"], false
+    local hpos
+    for i = pos, hcount+pos-1, 1 do
+        hpos = (i%hcount)+1
+        for petId, petData in pairs(Pet) do
+            local petName = string.lower(petData["id"])
+            local petToFindName = string.lower(config["huges"][hpos]["name"])
+            if string.find(petName, "huge") then
+                print("listHuge(): config: " .. petToFindName .. " | petData: " .. petName)
+                if string.find(petName, petToFindName) then
+                    print("listHuge(): config: " .. tostring(config["huges"][hpos]["pt"]) .. ", " .. tostring(config["huges"][hpos]["sh"]) .. " | petData: " .. tostring(petData["pt"]) .. ", " .. tostring(petData["sh"]))
+                    if ((not config["huges"][hpos]["pt"] and not petData["pt"]) or (config["huges"][hpos]["pt"] and petData["pt"] and config["huges"][hpos]["pt"] == petData["pt"])) and ((not config["huges"][hpos]["sh"] and not petData["sh"]) or (config["huges"][hpos]["sh"] and petData["sh"] and config["huges"][hpos]["sh"] == petData["sh"])) then
+                        listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, config["huges"][hpos]["price"], 1)
+                        print("listHuge(): listingStatus: " .. tostring(listingStatus))
+                        listingStatus = true
+                        break
+                    end
+                end
+            end
         end
-    end)
-    repeat task.wait() until signal == nil
-    local purchaseStatus, purchaseMessage = ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
-    if purchaseStatus then
-        listHuge(hname)
+        if listingStatus then break end
     end
 end
 
-print("--> BOOTH SNIPER STARTED <--")
+local function tryPurchase(uid, playerid, buytimestamp, pos)
+    print("tryPurchase(): uid: " .. tostring(uid) .. " | playerid: " .. tostring(playerid) .. " | buytimestamp: " .. tostring(buytimestamp) .. " | pos: " .. tostring(pos))
+    if uid and playerid and buytimestamp and pos then
+        signal = game:GetService("RunService").Heartbeat:Connect(function()
+            if buytimestamp < workspace:GetServerTimeNow() then
+                signal:Disconnect()
+                signal = nil
+            end
+        end)
+        repeat task.wait() until signal == nil
+
+        task.wait(math.random(2, 4)) -- Delay before purchase
+
+        local purchaseStatus, purchaseMessage = ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
+        print("tryPurchase(): purchaseStatus: " .. tostring(purchaseStatus) .. " | purchaseMessage: " .. tostring(purchaseMessage))
+        if purchaseStatus then listHuge(pos) end
+    else
+        print("tryPurchase(): purchaseStatus: false -> improper args")
+    end
+end
+
+local function init()
+    -- Initialize PlayerData
+    print("init(): Initialize PlayerData...")
+    for i = 1, #config["players"], 1 do
+        PlayerData = PlayerData .. tostring(Players[config["players"][i]].UserId) .. "_"
+    end
+    print("init(): PlayerData: " .. PlayerData)
+
+    -- Initialize auto claim booth
+    print("init(): Initialize auto claim booth...")
+    repeat task.wait() until claimBooth()
+
+    -- Check for starting player, if true, add the first huge
+    print("init(): Initialize add first huge...")
+    if game.Players.LocalPlayer.Name == config["players"][1] then
+        print("init(): start player detected. adding first huge...")
+        listHuge()
+    end
+
+    print("init(): Initialize completed...")
+    return true
+end
+
+repeat task.wait() until init()
 
 Booths_Broadcast.OnClientEvent:Connect(function(username, message)
     if type(message) == "table" then
@@ -69,16 +119,17 @@ Booths_Broadcast.OnClientEvent:Connect(function(username, message)
             local data = listing["ItemData"]["data"]
             local gems = tonumber(listing["DiamondCost"])
             local uid = key
-            local item = data["id"]
+            local item = string.lower(data["id"])
             local amount = tonumber(data["_am"]) or 1
             local playerid = message['PlayerID']
             local unitGems = gems / amount
 
-            print("ITEM NAME: " .. item)
+            print("Booths_Broadcast: listing: " .. tostring(playerid) .. " | " .. tostring(uid) .. " | " .. tostring(item) .. " | " .. tostring(unitGems))
 
-            for hname, hvalues in pairs(HUGEDATA) do
-                if string.find(item, hname) and unitGems == hvalues[2] then
-                    coroutine.wrap(tryPurchase)(uid, playerid, buytimestamp, hvalues[3])
+            for i = 1, #config["huges"], 1 do
+                if tostring(playerid) ~= tostring(Players.LocalPlayer.UserId) and string.find(PlayerData, tostring(playerid)) and string.find(item, string.lower(config["huges"][i]["name"])) and unitGems == config["huges"][i]["price"] then
+                    print("Booths_Broadcast: match found. calling tryPurchase...")
+                    coroutine.wrap(tryPurchase)(uid, playerid, buytimestamp, i)
                 end
             end
         end
