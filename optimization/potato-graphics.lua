@@ -1,3 +1,7 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
 local lighting = game.Lighting
 local terrain = game.Workspace.Terrain
 terrain.WaterWaveSize = 0
@@ -9,8 +13,6 @@ lighting.FogStart = 0
 lighting.FogEnd = 0
 lighting.Brightness = 0
 settings().Rendering.QualityLevel = "Level01"
-
-game.Players.LocalPlayer.PlayerScripts.Scripts.Core["Idle Tracking"].Enabled = false
 
 for i, v in pairs(game:GetDescendants()) do
     if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
