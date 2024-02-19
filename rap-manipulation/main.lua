@@ -50,6 +50,7 @@ local function listHuge(pos)
                 if string.find(petName, petToFindName) then
                     print("listHuge(): config: " .. tostring(config["huges"][hpos]["pt"]) .. ", " .. tostring(config["huges"][hpos]["sh"]) .. " | petData: " .. tostring(petData["pt"]) .. ", " .. tostring(petData["sh"]))
                     if ((not config["huges"][hpos]["pt"] and not petData["pt"]) or (config["huges"][hpos]["pt"] and petData["pt"] and config["huges"][hpos]["pt"] == petData["pt"])) and ((not config["huges"][hpos]["sh"] and not petData["sh"]) or (config["huges"][hpos]["sh"] and petData["sh"] and config["huges"][hpos]["sh"] == petData["sh"])) then
+                        task.wait(math.random(1, 2)) -- Delay before listing
                         listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, config["huges"][hpos]["price"], 1)
                         print("listHuge(): listingStatus: " .. tostring(listingStatus))
                         listingStatus = true
@@ -73,7 +74,7 @@ local function tryPurchase(uid, playerid, buytimestamp, pos)
         end)
         repeat task.wait() until signal == nil
 
-        task.wait(math.random(2, 4)) -- Delay before purchase
+        task.wait(math.random(1, 2)) -- Delay before purchase
 
         local purchaseStatus, purchaseMessage = ReplicatedStorage.Network.Booths_RequestPurchase:InvokeServer(playerid, uid)
         print("tryPurchase(): purchaseStatus: " .. tostring(purchaseStatus) .. " | purchaseMessage: " .. tostring(purchaseMessage))
