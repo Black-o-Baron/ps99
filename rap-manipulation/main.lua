@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Library = require(ReplicatedStorage:WaitForChild('Library'))
 local Booths_Broadcast = ReplicatedStorage.Network:WaitForChild("Booths_Broadcast")
 local PlayerData = ""
+local prices = {}
 local signal
 
 if not config then os.exit() end
@@ -51,7 +52,7 @@ local function listHuge(pos)
                     print("listHuge(): config: " .. tostring(config["huges"][hpos]["pt"]) .. ", " .. tostring(config["huges"][hpos]["sh"]) .. " | petData: " .. tostring(petData["pt"]) .. ", " .. tostring(petData["sh"]))
                     if ((not config["huges"][hpos]["pt"] and not petData["pt"]) or (config["huges"][hpos]["pt"] and petData["pt"] and config["huges"][hpos]["pt"] == petData["pt"])) and ((not config["huges"][hpos]["sh"] and not petData["sh"]) or (config["huges"][hpos]["sh"] and petData["sh"] and config["huges"][hpos]["sh"] == petData["sh"])) then
                         task.wait(math.random(2, 3)) -- Delay before listing
-                        listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, config["huges"][hpos]["price"], 1)
+                        listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, prices[math.random(1, #prices)], 1)
                         print("listHuge(): listingStatus: " .. tostring(listingStatus))
                         listingStatus = true
                         break
@@ -91,6 +92,11 @@ local function init()
         PlayerData = PlayerData .. tostring(Players[config["players"][i]].UserId) .. "_"
     end
     print("init(): PlayerData: " .. PlayerData)
+
+    print("init(): Initialize prices...")
+    for i=config["price"]["init"], config["price"]["max"], config["price"]["step"] do
+        table.insert(prices, i)
+    end
 
     -- Initialize auto claim booth
     print("init(): Initialize auto claim booth...")
@@ -137,7 +143,7 @@ Booths_Broadcast.OnClientEvent:Connect(function(username, message)
             print("Booths_Broadcast: listing: " .. tostring(playerid) .. " | " .. tostring(uid) .. " | " .. tostring(item) .. " | " .. tostring(unitGems))
 
             for i = 1, #config["huges"], 1 do
-                if tostring(playerid) ~= tostring(Players.LocalPlayer.UserId) and string.find(PlayerData, tostring(playerid)) and string.find(item, string.lower(config["huges"][i]["name"])) and unitGems == config["huges"][i]["price"] then
+                if tostring(playerid) ~= tostring(Players.LocalPlayer.UserId) and string.find(PlayerData, tostring(playerid)) and string.find(item, string.lower(config["huges"][i]["name"])) then
                     print("Booths_Broadcast: match found. calling tryPurchase...")
                     coroutine.wrap(tryPurchase)(uid, playerid, buytimestamp, i)
                 end
