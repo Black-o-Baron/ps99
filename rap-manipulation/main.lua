@@ -52,7 +52,10 @@ local function listHuge(pos)
                     print("listHuge(): config: " .. tostring(config["huges"][hpos]["pt"]) .. ", " .. tostring(config["huges"][hpos]["sh"]) .. " | petData: " .. tostring(petData["pt"]) .. ", " .. tostring(petData["sh"]))
                     if ((not config["huges"][hpos]["pt"] and not petData["pt"]) or (config["huges"][hpos]["pt"] and petData["pt"] and config["huges"][hpos]["pt"] == petData["pt"])) and ((not config["huges"][hpos]["sh"] and not petData["sh"]) or (config["huges"][hpos]["sh"] and petData["sh"] and config["huges"][hpos]["sh"] == petData["sh"])) then
                         task.wait(math.random(2, 3)) -- Delay before listing
-                        local n = ((Players[target].leaderstats["💎 Diamonds"].Value - config["price"]["init"]) // config["price"]["step"]) + 1
+                        local n = #prices
+                        if Players[target].leaderstats["💎 Diamonds"].Value < config["price"]["max"] then
+                            n = ((Players[target].leaderstats["💎 Diamonds"].Value - config["price"]["init"]) // config["price"]["step"]) + 1
+                        end
                         listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, prices[math.random(1, n)], 1)
                         print("listHuge(): listingStatus: " .. tostring(listingStatus))
                         listingStatus = true
