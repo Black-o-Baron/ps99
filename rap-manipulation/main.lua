@@ -8,8 +8,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Library = require(ReplicatedStorage:WaitForChild('Library'))
 local Booths_Broadcast = ReplicatedStorage.Network:WaitForChild("Booths_Broadcast")
-local PlayerData = ""
-local prices = {}
+local PlayerData, prices = "", {}
+local target
 local signal
 
 if not config then os.exit() end
@@ -52,7 +52,8 @@ local function listHuge(pos)
                     print("listHuge(): config: " .. tostring(config["huges"][hpos]["pt"]) .. ", " .. tostring(config["huges"][hpos]["sh"]) .. " | petData: " .. tostring(petData["pt"]) .. ", " .. tostring(petData["sh"]))
                     if ((not config["huges"][hpos]["pt"] and not petData["pt"]) or (config["huges"][hpos]["pt"] and petData["pt"] and config["huges"][hpos]["pt"] == petData["pt"])) and ((not config["huges"][hpos]["sh"] and not petData["sh"]) or (config["huges"][hpos]["sh"] and petData["sh"] and config["huges"][hpos]["sh"] == petData["sh"])) then
                         task.wait(math.random(2, 3)) -- Delay before listing
-                        listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, prices[math.random(1, #prices)], 1)
+                        local n = ((Players[target].leaderstats["💎 Diamonds"].Value - config["price"]["init"]) // config["price"]["step"]) + 1
+                        listingStatus = ReplicatedStorage.Network.Booths_CreateListing:InvokeServer(petId, prices[math.random(1, n)], 1)
                         print("listHuge(): listingStatus: " .. tostring(listingStatus))
                         listingStatus = true
                         break
@@ -89,6 +90,9 @@ local function init()
     -- Initialize PlayerData
     print("init(): Initialize PlayerData...")
     for i = 1, #config["players"], 1 do
+        if config["players"][i] ~= Players.LocalPlayer.Name then
+            target = config["players"][i]
+        end
         PlayerData = PlayerData .. tostring(Players[config["players"][i]].UserId) .. "_"
     end
     print("init(): PlayerData: " .. PlayerData)
