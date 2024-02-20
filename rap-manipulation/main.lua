@@ -16,25 +16,6 @@ local LocalPlayer = Players.LocalPlayer
 local prices, isPrimary = {}, false
 local signal
 
-local settings = {
-    ["players"] = {
-        [1] = "LoneByte_Alt3",
-        [2] = "Sharki_W28"
-    },
-    ["huges"] = {
-        {
-            ["name"] = "cyclops",
-            ["pt"] = nil,
-            ["sh"] = nil
-        }
-    },
-    ["price"] = {
-        ["init"] = 175000000,
-        ["max"] = 200000000,
-        ["step"] = 500000
-    }
-}
-
 local internalSettings = {
     ["target"] = settings["players"][1] ~= LocalPlayer.Name and settings["players"][1] or settings["players"][2],
     ["init"] = {
