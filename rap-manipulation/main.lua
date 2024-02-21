@@ -17,6 +17,7 @@ local prices, isPrimary = {}, false
 local signal
 
 local internalSettings = {
+    ["PlaceId"] = 15502339080,
     ["target"] = settings["players"][1] ~= LocalPlayer.Name and settings["players"][1] or settings["players"][2],
     ["init"] = {
         ["addFirstHugeDelay"] = 30
@@ -33,7 +34,7 @@ LocalPlayer.Idled:connect(function()
 end)
 
 local function serverHop(PlaceId, joinLowPlayerServer)
-    print("joinFriend(): PlaceId: " .. tostring(PlaceId) .. " | joinLowPlayerServer: " .. tostring(joinLowPlayerServer))
+    print("serverHop(): PlaceId: " .. tostring(PlaceId) .. " | joinLowPlayerServer: " .. tostring(joinLowPlayerServer))
     local retries = 0
     local config = {
         ["url"] = {
@@ -41,7 +42,8 @@ local function serverHop(PlaceId, joinLowPlayerServer)
             ["resultsLimit"] = 100
         },
         ["servers"] = {
-            ["ping"] = 100
+            ["ping"] = 100,
+            ["playing"] = 2
         },
         ["retries"] = {
             ["limit"] = 3,
@@ -54,23 +56,23 @@ local function serverHop(PlaceId, joinLowPlayerServer)
         local req = request({ Url = string.format(sfUrl, PlaceId, config["url"]["sortOrder"], config["url"]["resultsLimit"]) })
         local body = game:GetService("HttpService"):JSONDecode(req.Body)
         if body and body.data then
-            local servers, maxPlaying = {}, 1
+            local servers, playing = {}, 1
             repeat
                 for i, v in next, body.data do
                     if type(v) == "table" then
-                        if v.playing > maxPlaying then break end
-                        if v.id ~= game.JobId and v.playing == maxPlaying and v.ping < config["servers"]["ping"] then
+                        if v.playing > playing then break end
+                        if v.id ~= game.JobId and v.playing == playing and v.ping < config["servers"]["ping"] then
                             table.insert(servers, 1, v.id)
                         end
                     end
                 end
-                maxPlaying = maxPlaying + 1
-            until #servers > 0
+                playing = playing + 1
+            until #servers > 0 or playing > config["servers"]["playing"]
             if #servers == 0 then
                 retries = retries + 1
-                print("serverHop(): No low player servers(playing < 3) available. Retrying " .. tostring(retries) .. "/3.")
+                print("serverHop(): No servers available with " .. config["servers"]["playing"] " playing. Retrying " .. tostring(retries) .. "/3.")
                 task.wait(config["retries"]["delay"])
-                serverHop()
+                serverHop(PlaceId, joinLowPlayerServer)
             else
                 print("serverHop(): Server hopping in " .. tostring(config["delay"]) .. " seconds...")
                 task.wait(config["delay"])
@@ -80,7 +82,7 @@ local function serverHop(PlaceId, joinLowPlayerServer)
             retries = retries + 1
             print("serverHop(): Error in response. Retrying " .. tostring(retries) .. "/3.")
             task.wait(config["retries"]["delay"])
-            serverHop()
+            serverHop(PlaceId, joinLowPlayerServer)
         end
     else
         print("[FAIL] serverHop(): Error while trying to join.")
@@ -120,13 +122,13 @@ local function joinFriend(UserName)
                 retries = retries + 1
                 print("joinFriend(): " .. UserName .. " is either OFFLINE or NOT ADDED AS FRIEND. Retrying " .. tostring(retries) .. "/3.")
                 task.wait(config["retries"]["delay"])
-                joinFriend()
+                joinFriend(UserName)
             end
         else
             retries = retries + 1
             print("joinFriend(): Failed to get online players: " .. tostring(result) .. ". Retrying " .. tostring(retries) .. "/3.")
             task.wait(config["retries"]["delay"])
-            joinFriend()
+            joinFriend(UserName)
         end
     else
         print("[FAIL] joinFriend(): Error while trying to join friend. Try checking Privacy Settings")
@@ -156,13 +158,14 @@ end
 local function listHuge(pos)
     print("listHuge(): pos: " .. tostring(pos))
 
+    if not pos then pos = 1 end
+
     local config = {
         ["delay"] = {
             ["min"] = 2,
             ["max"] = 3
         }
     }
-    if not pos then pos = 1 end
     local Pet = Library.Save.Get().Inventory.Pet
     local hcount, listingStatus = #settings["huges"], false
     local hpos, petName, petToFindName
@@ -220,7 +223,7 @@ local function tryPurchase(uid, playerid, buytimestamp, pos)
         print("tryPurchase(): purchaseStatus: " .. tostring(purchaseStatus) .. " | purchaseMessage: " .. tostring(purchaseMessage))
         if purchaseStatus then
             if isPrimary and math.floor(os.clock() - osclock) >= math.random(config["serverHop"]["min"], config["serverHop"]["max"]) then
-                serverHop()
+                serverHop(internalSettings["PlaceId"], true)
             else
                 listHuge(pos)
             end
@@ -272,7 +275,7 @@ local function init()
         Players.PlayerRemoving:Connect(function(player)
             if player.Name == internalSettings["target"] then
                 task.wait(2)
-                joinFriend()
+                joinFriend(player.Name)
             end
         end)
     end
