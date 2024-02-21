@@ -24,6 +24,10 @@ local internalSettings = {
     }
 }
 
+print(internalSettings["PlaceId"])
+print(internalSettings["target"])
+print(internalSettings["init"]["addFirstHugeDelay"])
+
 LocalPlayer.PlayerScripts.Scripts.Core["Idle Tracking"].Enabled = false
 
 local VirtualUser = game:GetService("VirtualUser")
