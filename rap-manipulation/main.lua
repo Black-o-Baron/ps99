@@ -248,7 +248,7 @@ local function init()
 
     -- Check for starting player, if true, add the first huge
     print("init(): Initialize primary player check...")
-    isPrimary = Players[internalSettings["target"]].leaderstats["💎 Diamonds"].Value < settings["price"]["min"]
+    isPrimary = Players[internalSettings["target"]].leaderstats["💎 Diamonds"].Value < settings["price"]["init"]
     print("init(): isPrimary: " .. tostring(isPrimary))
     if isPrimary then
         local targetFound = false
