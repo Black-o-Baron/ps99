@@ -1,6 +1,6 @@
 local SERVER_HOP = true -- server hop after breaking all chests
 local SERVER_HOP_DELAY = 5 -- delay in seconds before server hopping (set to 0 for no delay)
-local CHEST_BREAK_DELAY = 5 -- delay in seconds before breaking next chest (set to 0 for no delay)
+local CHEST_BREAK_DELAY = 3 -- delay in seconds before breaking next chest (set to 0 for no delay)
 
 local BigChests = {
     [1] = "Beach",
@@ -41,7 +41,7 @@ end
 
 local function potatographics()
     task.wait(5)
-    
+
     local lighting = game.Lighting
     local terrain = game.Workspace.Terrain
     terrain.WaterWaveSize = 0
