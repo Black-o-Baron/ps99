@@ -40,6 +40,8 @@ local function split(input, separator)
 end
 
 local function potatographics()
+    task.wait(1)
+
     -- local lighting = game.Lighting
     -- local terrain = game.Workspace.Terrain
     -- terrain.WaterWaveSize = 0
@@ -77,6 +79,7 @@ local function potatographics()
 
     game:GetService("RunService"):Set3dRenderingEnabled(false)
 
+    task.wait(1)
     return true
 end
 
