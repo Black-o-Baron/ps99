@@ -242,14 +242,18 @@ if SERVER_HOP then
     task.wait(SERVER_HOP_DELAY)
 
     local sfUrl = "https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=%s&excludeFullGames=true"
-    local req = request({ Url = string.format(sfUrl, 8737899170, "Asc", 10) })
+    local req = request({ Url = string.format(sfUrl, 8737899170, "Asc", 25) })
     local body = game:GetService("HttpService"):JSONDecode(req.Body)
-    local deep = math.random(1, 25)
+    local deep = math.random(1, 9)
     if deep > 1 then
         for i = 1, deep, 1 do
-            req = request({ Url = string.format(sfUrl .. "&cursor=" .. body.nextPageCursor, 8737899170, "Asc", 10) })
-            body = game:GetService("HttpService"):JSONDecode(req.Body)
-            task.wait(0.1)
+            if body.nextPageCursor then
+                req = request({ Url = string.format(sfUrl .. "&cursor=" .. body.nextPageCursor, 8737899170, "Asc", 25) })
+                body = game:GetService("HttpService"):JSONDecode(req.Body)
+                task.wait(0.1)
+            else
+                break
+            end
         end
     end
     local servers = {}
