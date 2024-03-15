@@ -6,9 +6,8 @@ local Booths_Broadcast = ReplicatedStorage.Network:WaitForChild("Booths_Broadcas
 print("TESTING STARTED")
 
 Booths_Broadcast.OnClientEvent:Connect(function(username, message)
-    print("Booths_Broadcast called!")
-    print(tostring(username) .. " ==>> " .. tostring(type(message)))
     if username == "MythicalDealer" and type(message) == "table" then
+        print("Stage-1 OK.")
         printTable(message)
     end
 end)
