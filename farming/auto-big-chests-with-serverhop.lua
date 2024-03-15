@@ -1,6 +1,6 @@
 local SERVER_HOP = true -- server hop after breaking all chests
 local SERVER_HOP_DELAY = 2 -- delay in seconds before server hopping (set to 0 for no delay)
-local CHEST_BREAK_DELAY = 0 -- delay in seconds before breaking next chest (set to 0 for no delay)
+local CHEST_BREAK_DELAY = 1 -- delay in seconds before breaking next chest (set to 0 for no delay)
 
 local BigChests = {
     [1] = "Beach",
@@ -40,44 +40,46 @@ local function split(input, separator)
 end
 
 local function potatographics()
-    local lighting = game.Lighting
-    local terrain = game.Workspace.Terrain
-    terrain.WaterWaveSize = 0
-    terrain.WaterWaveSpeed = 0
-    terrain.WaterReflectance = 0
-    terrain.WaterTransparency = 0
-    lighting.GlobalShadows = false
-    lighting.FogStart = 0
-    lighting.FogEnd = 0
-    lighting.Brightness = 0
-    settings().Rendering.QualityLevel = "Level01"
+    task.wait(1)
 
-    for i, v in pairs(game:GetDescendants()) do
-        if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
-            v.Material = "Plastic"
-            v.Reflectance = 0
-        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-            v.Lifetime = NumberRange.new(0)
-        elseif v:IsA("Explosion") then
-            v.BlastPressure = 1
-            v.BlastRadius = 1
-        elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
-            v.Enabled = false
-        elseif v:IsA("MeshPart") then
-            v.Material = "Plastic"
-            v.Reflectance = 0
-        end
-    end
+    -- local lighting = game.Lighting
+    -- local terrain = game.Workspace.Terrain
+    -- terrain.WaterWaveSize = 0
+    -- terrain.WaterWaveSpeed = 0
+    -- terrain.WaterReflectance = 0
+    -- terrain.WaterTransparency = 0
+    -- lighting.GlobalShadows = false
+    -- lighting.FogStart = 0
+    -- lighting.FogEnd = 0
+    -- lighting.Brightness = 0
+    -- settings().Rendering.QualityLevel = "Level01"
 
-    for i, e in pairs(lighting:GetChildren()) do
-        if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
-            e.Enabled = false
-        end
-    end
+    -- for i, v in pairs(game:GetDescendants()) do
+    --     if v:IsA("Part") or v:IsA("Union") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
+    --         v.Material = "Plastic"
+    --         v.Reflectance = 0
+    --     elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+    --         v.Lifetime = NumberRange.new(0)
+    --     elseif v:IsA("Explosion") then
+    --         v.BlastPressure = 1
+    --         v.BlastRadius = 1
+    --     elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
+    --         v.Enabled = false
+    --     elseif v:IsA("MeshPart") then
+    --         v.Material = "Plastic"
+    --         v.Reflectance = 0
+    --     end
+    -- end
+
+    -- for i, e in pairs(lighting:GetChildren()) do
+    --     if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
+    --         e.Enabled = false
+    --     end
+    -- end
 
     game:GetService("RunService"):Set3dRenderingEnabled(false)
 
-    task.wait(2)
+    task.wait(1)
     return true
 end
 
@@ -239,18 +241,22 @@ if SERVER_HOP then
     print("Server hopping in " .. SERVER_HOP_DELAY .. " seconds")
     task.wait(SERVER_HOP_DELAY)
 
-    local sfUrl = "https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=%s&excludeFullGames=true" 
-    local req = request({ Url = string.format(sfUrl, 8737899170, "Asc", 50) }) 
-    local body = game:GetService("HttpService"):JSONDecode(req.Body) 
-    local deep = math.random(1, 3)
+    local sfUrl = "https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=%s&excludeFullGames=true"
+    local req = request({ Url = string.format(sfUrl, 8737899170, "Asc", 25) })
+    local body = game:GetService("HttpService"):JSONDecode(req.Body)
+    local deep = math.random(1, 9)
     if deep > 1 then
         for i = 1, deep, 1 do
-            req = request({ Url = string.format(sfUrl .. "&cursor=" .. body.nextPageCursor, 8737899170, "Asc", 50) }) 
-            body = game:GetService("HttpService"):JSONDecode(req.Body) 
-            task.wait(0.1)
+            if body.nextPageCursor then
+                req = request({ Url = string.format(sfUrl .. "&cursor=" .. body.nextPageCursor, 8737899170, "Asc", 25) })
+                body = game:GetService("HttpService"):JSONDecode(req.Body)
+                task.wait(0.1)
+            else
+                break
+            end
         end
     end
-    local servers = {} 
+    local servers = {}
     if body and body.data then
         for i, v in next, body.data do
             if type(v) == "table" and tonumber(v.playing) and tonumber(v.maxPlayers) and v.playing < v.maxPlayers and v.id ~= game.JobId and v.ping < 100 then
