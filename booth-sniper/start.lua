@@ -16,7 +16,7 @@
 getgenv().settings = {
     {
         item = "The Cocktail",
-        maxPrice = 145000,
+        maxPrice = 148000,
         class = "Potion",
         tier = 1
     }
