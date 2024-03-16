@@ -12,13 +12,17 @@
         tier = 1, -- nil for normal, 1 for gold, 2 for rainbow
         shiny = true -- nil for non-shiny, true for shiny
     }
+    {
+        item = "Secret Key Upper Half",
+        maxPrice = 52000,
+        class = "Misc"
+    }
 ]]
 getgenv().settings = {
     {
-        item = "The Cocktail",
-        maxPrice = 150000,
-        class = "Potion",
-        tier = 1
+        item = "Secret Key Upper Half",
+        maxPrice = 52000,
+        class = "Misc"
     }
 }
 repeat task.wait() until game:IsLoaded()
