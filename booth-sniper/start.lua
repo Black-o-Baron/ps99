@@ -20,8 +20,8 @@
 ]]
 getgenv().settings = {
     {
-        item = "Secret Key Lower Half",
-        maxPrice = 3000,
+        item = "Mini Pinata",
+        maxPrice = 53000,
         class = "Misc"
     }
 }
