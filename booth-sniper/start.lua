@@ -1,3 +1,18 @@
+--[[
+    {
+        item = "The Cocktail",
+        maxPrice = 145000,
+        class = "Potion",
+        tier = 1
+    }
+    {
+        item = "Amethyst Dragon", -- idk if this works with part of the name...
+        maxPrice = 2000000,
+        class = "Pet",
+        tier = 1, -- nil for normal, 1 for gold, 2 for rainbow
+        shiny = true -- nil for non-shiny, true for shiny
+    }
+]]
 getgenv().settings = {
     {
         item = "The Cocktail",
