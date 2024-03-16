@@ -1,10 +1,8 @@
-local settings = {
-    {
-        item = "Mini Pinata",
-        maxPrice = 51000,
-        class = "Misc"
-    }
-}
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+if not settings then os.exit() end
 
 local tpToBooth = false
 local discordwebhook =
@@ -134,10 +132,23 @@ local randTable
 local function infoHanlder()
     randTable = settings[math.random(1, #settings)]
     local ohString2
-    if not randTable.tier then
-        ohString2 = "{\"id\":\"" .. randTable.item .. "\"}"
+    if randTable.class == "Charm" or randTable.class == "Enchant" or randTable.class == "Potion" then
+        ohString2 = string.format("{\"id\":\"" .. randTable.item .. "\",\"tn\":%d}", randTable.tier or 1)
+    elseif randTable.class == "Pet" then
+        ohString2 = "{\"id\":\"" .. randTable.item .. "\""
+        if randTable.tier then
+            ohString2 = string.format(ohString2 .. ",\"tn\":%d", randTable.tier)
+        end
+        if randTable.shiny then
+            ohString2 = ohString2 .. ",\"sh\":" .. tostring(randTable.shiny)
+        end
+        ohString2 = ohString2 .. "}"
     else
-        ohString2 = string.format("{\"id\":\"" .. randTable.item .. "\",\"tn\":%d}", randTable.tier)
+        ohString2 = "{\"id\":\"" .. randTable.item .. "\""
+        if randTable.tier then
+            ohString2 = string.format(ohString2 .. ",\"tn\":%d", randTable.tier)
+        end
+        ohString2 = ohString2 .. "}"
     end
     print('looking for item: ' .. randTable.item)
 
