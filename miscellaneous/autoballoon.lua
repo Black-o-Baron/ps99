@@ -1,4 +1,4 @@
-local getSmallBalloons = true
+local getSmallBalloons = false
 local doing = false
 
 repeat task.wait() until game:IsLoaded()
