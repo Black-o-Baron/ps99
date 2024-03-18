@@ -13,6 +13,8 @@ elseif game.PlaceId == 15502339080 then
 end
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Library = require(game:GetService("ReplicatedStorage").Library)
+Library.Network.Invoke("Mailbox: Claim All")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 getgenv().autoBalloon = true
 
