@@ -1,7 +1,7 @@
 getgenv().MoneyPrinter = {
     toolName = "Slingshot",
     autoBalloons = true,
-    autoPresents = false,
+    autoPresents = true,
 
     serverHopper = true,
     avoidCooldown = false,
