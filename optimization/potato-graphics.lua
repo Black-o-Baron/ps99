@@ -38,7 +38,7 @@ for i, e in pairs(lighting:GetChildren()) do
     end
 end
 ]]
-
+task.wait(15)
 pcall(function()
     for _, v in pairs(game:GetService("Workspace"):FindFirstChild("__THINGS"):GetChildren()) do
         if table.find({"ShinyRelics", "Ornaments", "Instances", "Ski Chairs"}, v.Name) then
