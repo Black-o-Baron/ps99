@@ -1,7 +1,7 @@
 local getSmallBalloons = false
 local doing = false
 
-task.wait(10)
+task.wait(5)
 
 repeat task.wait(1) until game:IsLoaded()
 repeat task.wait(1) until game.PlaceId ~= nil
