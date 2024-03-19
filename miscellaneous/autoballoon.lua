@@ -1,12 +1,11 @@
 local getSmallBalloons = false
 local doing = false
 
-task.wait(5)
-
 repeat task.wait(1) until game:IsLoaded()
 repeat task.wait(1) until game.PlaceId ~= nil
 repeat task.wait(1) until not game.Players.LocalPlayer.PlayerGui:FindFirstChild("__INTRO")
 repeat task.wait(1) until game:GetService("Players").LocalPlayer and game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+
 if game.PlaceId == 8737899170 or game.PlaceId == 16498369169 then
     local map = game:GetService("Workspace"):FindFirstChild('Map') or game:GetService("Workspace"):FindFirstChild('Map2')
     repeat task.wait() until #map:GetChildren() >= 25
