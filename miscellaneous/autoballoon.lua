@@ -135,6 +135,7 @@ if game:IsLoaded() then
 end
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Library = require(ReplicatedStorage.Library)
 local LocalPlayer = game:GetService("Players").LocalPlayer
 getgenv().autoBalloon = true
 
@@ -406,8 +407,13 @@ workspace.__THINGS.Lootbags.ChildAdded:Connect(function()
     end
 end)
 
-game:GetService("ReplicatedStorage").Network["Mailbox: Claim All"]:InvokeServer()
-
+-- game:GetService("ReplicatedStorage").Network["Mailbox: Claim All"]:InvokeServer()
+pcall(function()
+    local success = Library.Network.Invoke("Mailbox: Claim All")
+    if success then
+        print("Claimed Mail!")
+    end
+end)
 
 while getgenv().autoBalloon do
     local balloonIds = {}
