@@ -182,6 +182,16 @@ function getTotalRAP(num)
 	end
 	return formattedNum .. suffixes[suffixInd]
 end
+local ClientModule = require(game:GetService("ReplicatedStorage").Library.Client)
+function getMyPetsEquipped()
+    tbl = {}
+    for i, v in pairs(ClientModule.PlayerPet.GetAll()) do
+        if v.owner == game.Players.LocalPlayer and not table.find(tbl, v) then
+            table.insert(tbl, v)
+        end
+    end
+    return tbl
+end
 -- AUTO ORB
 local autoOrbConnection = nil
 local autoLootBagConnection = nil
@@ -231,8 +241,16 @@ while getgenv().MoneyPrinter.autoBalloons do task.wait()
 				local breakableId = getBalloonUID(getCurrentZone())
 				if breakableId == "Skip" then break end
 				if breakableId then
-					HRP.CFrame = CFrame.new(Balloon.LandPosition)
-					Library.Network.Fire("Breakables_PlayerDealDamage", breakableId)
+                    local AvaliblePets = getMyPetsEquipped()
+                    pcall(function()
+                        HRP.CFrame = CFrame.new(Balloon.LandPosition)
+                        pcall(function()
+                            AvaliblePets = getMyPetsEquipped()
+                            local pets = AvaliblePets[math.random(1, #AvaliblePets)]
+                            Library.Network.Fire("Breakables_JoinPet", { [1] = breakableId, [2] = pets.euid })
+                        end)
+                        Library.Network.Fire("Breakables_PlayerDealDamage", breakableId)
+                    end)
 				elseif not Balloon.Popped then
 					HRP.CFrame = CFrame.new(Balloon.Position + Vector3.new(0,30,0))
 					Slingshot.fireWeapon()
