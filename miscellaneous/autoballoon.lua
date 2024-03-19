@@ -408,12 +408,14 @@ workspace.__THINGS.Lootbags.ChildAdded:Connect(function()
 end)
 
 -- game:GetService("ReplicatedStorage").Network["Mailbox: Claim All"]:InvokeServer()
+--[[ AUTO CLAIM MAIL - COMMENTED - UNCOMMENT ONLY WHEN NEEDED AND COMMENT BACK AFTER DONE
 pcall(function()
     local success = Library.Network.Invoke("Mailbox: Claim All")
     if success then
         print("Claimed Mail!")
     end
 end)
+]]
 
 while getgenv().autoBalloon do
     local balloonIds = {}
