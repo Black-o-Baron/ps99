@@ -261,6 +261,7 @@ function getMyPetsEquipped()
 end
 
 function hop()
+    task.wait(5)
     local function alternateServersRequest()
         local response = request({
             Url = 'https://games.roblox.com/v1/games/' ..
