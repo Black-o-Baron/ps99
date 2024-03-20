@@ -265,6 +265,13 @@ autoLootBagConnection = workspace.__THINGS.Lootbags.ChildAdded:Connect(function(
 	task.wait()
 	v:Destroy()
 end)
+pcall(function()
+    local success = Library.Network.Invoke("Mailbox: Claim All")
+    if success then
+        print("Claimed Mail!")
+    end
+    task.wait(1)
+end)
 local startBalloons = #workspace.__THINGS.BalloonGifts:GetChildren()
 if #workspace.__THINGS.BalloonGifts:GetChildren() <= 1 then
 	repeat game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, getServer().id, Player) task.wait(3) until not game.PlaceId
