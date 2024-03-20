@@ -8,7 +8,7 @@ getgenv().MoneyPrinter = {
 
     serverHopper = true,
     avoidCooldown = false,
-    minServerTime = 10, -- Avoid 268 if multi-accounting : Force stay in server for x time even if no Balloons
+    minServerTime = 20, -- Avoid 268 if multi-accounting : Force stay in server for x time even if no Balloons
 
     sendWeb = true,
     webURL = "https://discord.com/api/webhooks/1219484976781721723/8dNBZ8UsnmA7G1E3iMS-nUDy3qYMKQ_A1m1DnNHsHWVTNIvh56mqwWjEZq3X5koejyGY",
