@@ -163,7 +163,7 @@ function getServer()
     for i = 1, deep, 1 do
         if response.nextPageCursor then
             response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true&cursor=' .. tostring(response.nextPageCursor)))
-            task.wait(1)
+            task.wait(0.1)
         else
             break
         end
