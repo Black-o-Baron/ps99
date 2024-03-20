@@ -158,12 +158,20 @@ function getBalloonUID(zoneName)
 	end
 end
 function getServer()
+	local server
     local servers = {}
 	local response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true'))
 	task.wait(0.1)
-	if response and response.nextPageCursor then
-		response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true&cursor=' .. tostring(response.nextPageCursor)))
-		task.wait(0.1)
+	if response.nextPageCursor then
+		local deep = math.random(1, 2)
+		for i = 1, deep, 1 do
+			if response.nextPageCursor then
+				response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true&cursor=' .. tostring(response.nextPageCursor)))
+				task.wait(0.1)
+			else
+				break
+			end
+		end
 		if response and response.data then
 			for i, v in next, response.data do
 				if type(v) == "table" and v.id ~= game.JobId and v.ping < 100 then
@@ -172,7 +180,9 @@ function getServer()
 			end
 		end
 	end
-    local server = servers[Random.new():NextInteger(1, 100)]
+	if #servers > 0 then
+		server = servers[Random.new():NextInteger(1, #servers)]
+	end
 	if server then return server else return getServer() end
 end
 function getPresents() for i,v in pairs(Library.Save.Get().HiddenPresents) do 
