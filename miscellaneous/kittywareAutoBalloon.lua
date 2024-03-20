@@ -161,22 +161,18 @@ function getServer()
 	local server
     local servers = {}
 	local response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true'))
-	task.wait(0.1)
 	if response.nextPageCursor then
-		local deep = math.random(1, 2)
+		local deep = math.random(1, 3)
 		for i = 1, deep, 1 do
-			if response.nextPageCursor then
-				response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true&cursor=' .. tostring(response.nextPageCursor)))
-				task.wait(0.1)
-			else
-				break
-			end
+			response = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. tostring(game.PlaceId) .. '/servers/Public?sortOrder=Asc&limit=100&excludeFullGames=true&cursor=' .. tostring(response.nextPageCursor)))
+			if not response.nextPageCursor then break end
+			task.wait(0.1)
 		end
-		if response and response.data then
-			for i, v in next, response.data do
-				if type(v) == "table" and v.id ~= game.JobId and v.ping < 100 then
-					table.insert(servers, 1, v)
-				end
+	end
+	if response and response.data then
+		for i, v in next, response.data do
+			if type(v) == "table" and v.id ~= game.JobId and v.ping < 100 then
+				table.insert(servers, 1, v)
 			end
 		end
 	end
@@ -206,16 +202,16 @@ function getTotalRAP(num)
 	end
 	return formattedNum .. suffixes[suffixInd]
 end
-local ClientModule = require(game:GetService("ReplicatedStorage").Library.Client)
-function getMyPetsEquipped()
-    tbl = {}
-    for i, v in pairs(ClientModule.PlayerPet.GetAll()) do
-        if v.owner == game.Players.LocalPlayer and not table.find(tbl, v) then
-            table.insert(tbl, v)
-        end
-    end
-    return tbl
-end
+-- local ClientModule = require(game:GetService("ReplicatedStorage").Library.Client)
+-- function getMyPetsEquipped()
+--     tbl = {}
+--     for i, v in pairs(ClientModule.PlayerPet.GetAll()) do
+--         if v.owner == game.Players.LocalPlayer and not table.find(tbl, v) then
+--             table.insert(tbl, v)
+--         end
+--     end
+--     return tbl
+-- end
 function autoMailGiftBags()
     if getDiamonds() >= 10000 then
         local largeGiftBagCheckDone, smallGiftBagCheckDone
@@ -265,13 +261,13 @@ autoLootBagConnection = workspace.__THINGS.Lootbags.ChildAdded:Connect(function(
 	task.wait()
 	v:Destroy()
 end)
-pcall(function()
-    local success = Library.Network.Invoke("Mailbox: Claim All")
-    if success then
-        print("Claimed Mail!")
-    end
-    task.wait(1)
-end)
+-- pcall(function()
+--     local success = Library.Network.Invoke("Mailbox: Claim All")
+--     if success then
+--         print("Claimed Mail!")
+--     end
+--     task.wait(1)
+-- end)
 local startBalloons = #workspace.__THINGS.BalloonGifts:GetChildren()
 if #workspace.__THINGS.BalloonGifts:GetChildren() <= 1 then
 	repeat game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, getServer().id, Player) task.wait(3) until not game.PlaceId
@@ -291,22 +287,24 @@ while getgenv().MoneyPrinter.autoBalloons do task.wait()
 	if getgenv().MoneyPrinter.autoPresents then getPresents() end
 	for _,Balloon in pairs(Library.Network.Invoke("BalloonGifts_GetActiveBalloons")) do task.wait(0.03)
 		if Balloon.Id then
-			if not getgenv().MoneyPrinter.getSmallBalloons and Balloon.BalloonTypeId == "Small Balloon" then continue end
+			-- if not getgenv().MoneyPrinter.getSmallBalloons and Balloon.BalloonTypeId == "Small Balloon" then continue end
 			while Library.Network.Invoke("BalloonGifts_GetActiveBalloons")[Balloon.Id] do task.wait(0.03)
 				if not getTool() then equipTool(getgenv().MoneyPrinter.toolName) end
 				local breakableId = getBalloonUID(getCurrentZone())
 				if breakableId == "Skip" then break end
 				if breakableId then
-                    local AvaliblePets = getMyPetsEquipped()
-                    pcall(function()
-                        HRP.CFrame = CFrame.new(Balloon.LandPosition)
-                        pcall(function()
-                            AvaliblePets = getMyPetsEquipped()
-                            local pets = AvaliblePets[math.random(1, #AvaliblePets)]
-                            Library.Network.Fire("Breakables_JoinPet", { [1] = breakableId, [2] = pets.euid })
-                        end)
-                        Library.Network.Fire("Breakables_PlayerDealDamage", breakableId)
-                    end)
+                    -- local AvaliblePets = getMyPetsEquipped()
+                    -- pcall(function()
+                    --     HRP.CFrame = CFrame.new(Balloon.LandPosition)
+                    --     pcall(function()
+                    --         AvaliblePets = getMyPetsEquipped()
+                    --         local pets = AvaliblePets[math.random(1, #AvaliblePets)]
+                    --         Library.Network.Fire("Breakables_JoinPet", { [1] = breakableId, [2] = pets.euid })
+                    --     end)
+                    --     Library.Network.Fire("Breakables_PlayerDealDamage", breakableId)
+                    -- end)
+					HRP.CFrame = CFrame.new(Balloon.LandPosition)
+					Library.Network.Fire("Breakables_PlayerDealDamage", breakableId)
 				elseif not Balloon.Popped then
 					HRP.CFrame = CFrame.new(Balloon.Position + Vector3.new(0,30,0))
 					Slingshot.fireWeapon()
