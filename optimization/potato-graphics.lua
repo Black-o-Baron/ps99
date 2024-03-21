@@ -37,7 +37,7 @@ for i, e in pairs(lighting:GetChildren()) do
         e.Enabled = false
     end
 end
-
+]]
 
 
 
@@ -161,4 +161,3 @@ for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
 end
 
 setfpscap(8)
-]]
