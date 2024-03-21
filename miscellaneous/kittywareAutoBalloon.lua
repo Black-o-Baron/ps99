@@ -2,7 +2,6 @@ repeat task.wait(1) until game:IsLoaded()
 repeat task.wait(1) until game.PlaceId ~= nil
 repeat task.wait(1) until game:GetService("Players") and game:GetService("Players").LocalPlayer
 repeat task.wait(1) until not game.Players.LocalPlayer.PlayerGui:FindFirstChild("__INTRO")
-
 if game:IsLoaded() and getgenv().MoneyPrinter.maybeCPUReducer then
 	pcall(function()
 		for _, v in pairs(game:GetService("Workspace"):FindFirstChild("__THINGS"):GetChildren()) do
@@ -123,9 +122,6 @@ if game:IsLoaded() and getgenv().MoneyPrinter.maybeCPUReducer then
 	end
 	setfpscap(8)
 end
-
-game:GetService("RunService"):Set3dRenderingEnabled(false)
-
 local LargeRAP = 11000; local SmallRAP = 2800
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
