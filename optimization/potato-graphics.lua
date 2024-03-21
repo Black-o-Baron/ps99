@@ -37,7 +37,10 @@ for i, e in pairs(lighting:GetChildren()) do
         e.Enabled = false
     end
 end
-]]
+
+
+
+
 task.wait(15)
 pcall(function()
     for _, v in pairs(game:GetService("Workspace"):FindFirstChild("__THINGS"):GetChildren()) do
@@ -158,3 +161,4 @@ for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
 end
 
 setfpscap(8)
+]]
