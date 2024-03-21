@@ -1,4 +1,4 @@
-task.wait(2)
+task.wait(5)
 getgenv().MoneyPrinter = {
     toolName = "Slingshot",
     autoBalloons = true,
