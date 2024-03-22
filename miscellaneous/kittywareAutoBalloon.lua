@@ -273,6 +273,19 @@ end)
 --     end
 --     task.wait(1)
 -- end)
+local startBalloons = #workspace.__THINGS.BalloonGifts:GetChildren()
+if #workspace.__THINGS.BalloonGifts:GetChildren() <= 1 then
+	if getgenv().MoneyPrinter.sendWeb then
+		sendNotif("```asciidoc\n[ "..Player.Name.." - No Earnings ]```")
+	end
+	if getgenv().MoneyPrinter.avoidCooldown then
+		repeat
+			currentTime = os.time()
+			task.wait(1)
+		until currentTime - startTime >= getgenv().MoneyPrinter.minServerTime
+	end
+	repeat game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, getServer().id, Player) task.wait(3) until not game.PlaceId
+end
 local startGifts = 0
 local startLarge = 0
 for i,v in pairs(getInfo("Inventory").Misc) do
@@ -284,30 +297,6 @@ for i,v in pairs(getInfo("Inventory").Misc) do
 	end
 end
 local startTime = os.time()
-local startBalloons = #workspace.__THINGS.BalloonGifts:GetChildren()
-if #workspace.__THINGS.BalloonGifts:GetChildren() <= 1 then
-	local endGifts = 0
-	local endLarge = 0
-	local currentTime = os.time()
-	for i,v in pairs(getInfo("Inventory").Misc) do
-		if endGifts ~= 0 and endLarge ~= 0 then break end
-		if v.id == "Gift Bag" then
-			endGifts = (v._am or 1)
-		elseif v.id == "Large Gift Bag" then
-			endLarge = (v._am or 1)
-		end
-	end
-	if getgenv().MoneyPrinter.sendWeb then
-		sendNotif("```asciidoc\n[ "..Player.Name.." - No Earnings ]\n‐ "..tostring(endGifts - startGifts).." Small :: "..tostring(getTotalRAP((endGifts - startGifts) * SmallRAP)).." \n‐ "..tostring(endLarge - startLarge).." Large :: "..tostring(getTotalRAP((endLarge - startLarge) * LargeRAP)).." \n\n[ Total / Server ]\n‐ "..tostring(endGifts).." Small :: "..tostring(getTotalRAP(endGifts * SmallRAP)).." \n‐ "..tostring(endLarge).." Large :: "..tostring(getTotalRAP(endLarge * LargeRAP)).." \n- took "..tostring(currentTime - startTime).." seconds \n- had "..tostring(startBalloons).." balloons \n\n[ Diamonds ]\n‐ have " .. tostring(getDiamonds()) .. " diamonds\n```")
-	end
-	if getgenv().MoneyPrinter.avoidCooldown then
-		repeat
-			currentTime = os.time()
-			task.wait(1)
-		until currentTime - startTime >= getgenv().MoneyPrinter.minServerTime
-	end
-	repeat game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, getServer().id, Player) task.wait(3) until not game.PlaceId
-end
 while getgenv().MoneyPrinter.autoBalloons do task.wait()
 	if getgenv().MoneyPrinter.autoPresents then getPresents() end
 	for _,Balloon in pairs(Library.Network.Invoke("BalloonGifts_GetActiveBalloons")) do task.wait(0.03)
