@@ -273,8 +273,10 @@ end)
 --     end
 --     task.wait(1)
 -- end)
+local startTime = os.time()
 local startBalloons = #workspace.__THINGS.BalloonGifts:GetChildren()
 if #workspace.__THINGS.BalloonGifts:GetChildren() <= 1 then
+	local currentTime = os.time()
 	if getgenv().MoneyPrinter.sendWeb then
 		sendNotif("```asciidoc\n[ "..Player.Name.." - No Earnings ]```")
 	end
@@ -296,7 +298,6 @@ for i,v in pairs(getInfo("Inventory").Misc) do
 		startLarge = (v._am or 1)
 	end
 end
-local startTime = os.time()
 while getgenv().MoneyPrinter.autoBalloons do task.wait()
 	if getgenv().MoneyPrinter.autoPresents then getPresents() end
 	for _,Balloon in pairs(Library.Network.Invoke("BalloonGifts_GetActiveBalloons")) do task.wait(0.03)
