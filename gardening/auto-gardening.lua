@@ -99,19 +99,13 @@ while getgenv().autoGarden do
     HRP.CFrame = CFrame.new(-449, 110, -1399) -- TP to center pot
 
     task.wait(10)
-    for i = 1, 10 do
+    for i = 1, 10, 1 do
         Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "PlantSeed", i, "Diamond")
-        task.wait()
-        if getgenv().InstaPlant then
-            Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "InstaGrowSeed", i)
-        end
-        task.wait()
-        if getgenv().Water then
-            Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "WaterSeed", i)
-        end
-        task.wait()
+        task.wait(5)
+        Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "WaterSeed", i)
+        task.wait(5)
         Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "ClaimPlant", i)
-        task.wait()
+        task.wait(5)
     end
     task.wait(10)
 
