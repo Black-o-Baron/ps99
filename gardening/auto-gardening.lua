@@ -59,26 +59,26 @@ end
 local autoOrbConnection = nil
 local autoLootBagConnection = nil
 for i, v in workspace.__THINGS.Orbs:GetChildren() do
-	Library.Network.Fire("Orbs: Collect",{tonumber(v.Name)})
-	Library.Network.Fire("Orbs_ClaimMultiple",{[1]={[1]=v.Name}})
-	task.wait()
-	v:Destroy()
+    Library.Network.Fire("Orbs: Collect", { tonumber(v.Name) })
+    Library.Network.Fire("Orbs_ClaimMultiple", { [1] = { [1] = v.Name } })
+    task.wait()
+    v:Destroy()
 end
 for i, v in workspace.__THINGS.Lootbags:GetChildren() do
-	Library.Network.Fire("Lootbags_Claim",{v.Name})
-	task.wait()
-	v:Destroy()
+    Library.Network.Fire("Lootbags_Claim", { v.Name })
+    task.wait()
+    v:Destroy()
 end
 autoOrbConnection = workspace.__THINGS.Orbs.ChildAdded:Connect(function(v)
-	Library.Network.Fire("Orbs: Collect",{tonumber(v.Name)})
-	Library.Network.Fire("Orbs_ClaimMultiple",{[1]={[1]=v.Name}})
-	task.wait()
-	v:Destroy()
+    Library.Network.Fire("Orbs: Collect", { tonumber(v.Name) })
+    Library.Network.Fire("Orbs_ClaimMultiple", { [1] = { [1] = v.Name } })
+    task.wait()
+    v:Destroy()
 end)
 autoLootBagConnection = workspace.__THINGS.Lootbags.ChildAdded:Connect(function(v)
-	Library.Network.Fire("Lootbags_Claim",{v.Name})
-	task.wait()
-	v:Destroy()
+    Library.Network.Fire("Lootbags_Claim", { v.Name })
+    task.wait()
+    v:Destroy()
 end)
 
 pcall(function()
@@ -120,51 +120,83 @@ if getDiamonds() >= 30000 then
         end
     end
 end
+
 print("AUTO GARDENING START...")
+
 while getgenv().autoGarden do
+
     print("LOOP START...")
+
     print("Teleporting to the Garden Merchant area...")
-    HRP.CFrame = CFrame.new(260,16,2145) -- TP to Garden Merchant area center point
-    task.wait(10) -- Added delay here just incase of unexpected lag during teleport
+    HRP.CFrame = CFrame.new(260, 16, 2145) -- TP to Garden Merchant area center point
+    task.wait(10)                          -- Added delay here just incase of unexpected lag during teleport
+
     print("Teleporting to Garden entry door...")
-    HRP.CFrame = CFrame.new(184,23,1989) -- TP to gardening entry door
-    print("Waiting for 60 seconds to avoid unexpected lag...")
-    task.wait(60) -- Added delay here just incase of unexpected lag during teleport
+    HRP.CFrame = CFrame.new(184, 23, 1989)    -- TP to gardening entry door
+    task.wait(30)                             -- Added delay here just incase of unexpected lag during teleport
+
     print("Teleporting to to center pot...")
-    HRP.CFrame = CFrame.new(-449,110,-1399) -- TP to center pot
-    task.wait()
+    HRP.CFrame = CFrame.new(-449, 110, -1399) -- TP to center pot
+
+    task.wait(10)
     for i = 1, 10 do
+        Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "PlantSeed", i, "Diamond")
         task.wait()
-        Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "PlantSeed", i, "Diamond") -- Plant seed
-        if getgenv().InstaPlant then Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "InstaGrowSeed", i) end
-        if getgenv().Water then Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "WaterSeed", i) end -- Water seed
-        Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "ClaimPlant", i) -- Claim plant
+        if getgenv().InstaPlant then
+            Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "InstaGrowSeed", i)
+        end
+        task.wait()
+        if getgenv().Water then
+            Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "WaterSeed", i)
+        end
+        task.wait()
+        Library.Network.Invoke("Instancing_InvokeCustomFromClient", "FlowerGarden", "ClaimPlant", i)
+        task.wait()
     end
-    task.wait()
+    task.wait(10)
+
     print("Teleporting to Garden exit door...")
-    HRP.CFrame = CFrame.new(-533,108,-1401) -- TP to gardening exit door
-    task.wait(60) -- Added delay here just incase of unexpected lag during teleport
-    print("Teleporting to Advanced Merchant area...")
-    HRP.CFrame = CFrame.new(819,16,1493) -- TP to Advanced Merchant area center point
-    for i = 1, 6 do
-        task.wait()
-        args = {
-            [1] = "AdvancedMerchant",
-            [2] = i
-        }
-        game:GetService("ReplicatedStorage").Network.Merchant_RequestPurchase:InvokeServer(unpack(args))
+    HRP.CFrame = CFrame.new(-533, 108, -1401) -- TP to gardening exit door
+    task.wait(30)                             -- Added delay here just incase of unexpected lag during teleport
+
+    for i = 1, 18, 1 do
+
+        print("Teleporting to Advanced Merchant area...")
+        HRP.CFrame = CFrame.new(819, 16, 1493) -- TP to Advanced Merchant area center point
+        task.wait(10)
+
+        for i = 1, 6 do
+            args = {
+                [1] = "AdvancedMerchant",
+                [2] = i
+            }
+            for i = 1, 5 do
+                task.wait()
+                game:GetService("ReplicatedStorage").Network.Merchant_RequestPurchase:InvokeServer(unpack(args))
+            end
+            task.wait()
+        end
+
+        print("Teleporting to Garden Merchant Area...")
+        HRP.CFrame = CFrame.new(260, 16, 2145) -- TP to Garden Merchant area center point
+        task.wait(10)
+
+        for i = 1, 6 do
+            args = {
+                [1] = "GardenMerchant",
+                [2] = i
+            }
+            for i = 1, 5 do
+                task.wait()
+                game:GetService("ReplicatedStorage").Network.Merchant_RequestPurchase:InvokeServer(unpack(args))
+            end
+            task.wait()
+        end
+
     end
-    task.wait(60)
-    print("Teleporting to Garden Merchant Area...")
-    HRP.CFrame = CFrame.new(260,16,2145) -- TP to Garden Merchant area center point
-    for i = 1, 6 do
-        task.wait()
-        args = {
-            [1] = "GardenMerchant",
-            [2] = i
-        }
-        game:GetService("ReplicatedStorage").Network.Merchant_RequestPurchase:InvokeServer(unpack(args))
-    end
-    print("LOOP DONE... WAITING FOR NEXT CYCLE...")
-    task.wait(1300)
+
+    print("LOOP DONE...")
+
+    task.wait()
+
 end
