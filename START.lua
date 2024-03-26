@@ -120,13 +120,3 @@ for i, v in pairs(game:GetService("CoreGui"):GetChildren()) do
 end
 
 setfpscap(8)
-
-task.wait(30)
-
-if game.PlaceId == 16498369169 then
-    getgenv().AuthKey = "HUGE_i2nJpVqbawdA"
-    getgenv().LoadSettings = {
-        Example_Setting = Example_Value
-    }
-    loadstring(game:HttpGet("https://HugeGames.io/ps99"))()
-end
