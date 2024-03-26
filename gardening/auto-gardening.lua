@@ -113,11 +113,11 @@ while getgenv().autoGarden do
     HRP.CFrame = CFrame.new(-533, 108, -1401) -- TP to gardening exit door
     task.wait(30)                             -- Added delay here just incase of unexpected lag during teleport
 
-    for i = 1, 18, 1 do
+    for i = 1, 10, 1 do
 
         print("Teleporting to Advanced Merchant area...")
         HRP.CFrame = CFrame.new(819, 16, 1493) -- TP to Advanced Merchant area center point
-        task.wait(10)
+        task.wait(30)
 
         for i = 1, 6 do
             args = {
@@ -125,15 +125,17 @@ while getgenv().autoGarden do
                 [2] = i
             }
             for i = 1, 5 do
-                task.wait()
+                task.wait(1)
                 game:GetService("ReplicatedStorage").Network.Merchant_RequestPurchase:InvokeServer(unpack(args))
             end
-            task.wait()
+            task.wait(1)
         end
+
+        task.wait(30)
 
         print("Teleporting to Garden Merchant Area...")
         HRP.CFrame = CFrame.new(260, 16, 2145) -- TP to Garden Merchant area center point
-        task.wait(10)
+        task.wait(30)
 
         for i = 1, 6 do
             args = {
@@ -141,16 +143,18 @@ while getgenv().autoGarden do
                 [2] = i
             }
             for i = 1, 5 do
-                task.wait()
+                task.wait(1)
                 game:GetService("ReplicatedStorage").Network.Merchant_RequestPurchase:InvokeServer(unpack(args))
             end
-            task.wait()
+            task.wait(1)
         end
+
+        task.wait(30)
 
     end
 
     print("LOOP DONE...")
 
-    task.wait()
+    task.wait(1)
 
 end
