@@ -101,17 +101,17 @@ end)
 
 
 workspace.__THINGS.Lootbags.ChildAdded:Connect(function(v)
-    task.wait(0.5)
     pcall(function()
-        if v:IsA("Model") and v.PrimaryPart then
-            wait()
-            v.PrimaryPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-            wait()
-            game:GetService("ReplicatedStorage").Network.Lootbags_Claim:FireServer({ v.Name })
-            wait()
-            v.Parent = nil
-        end
+        wait()
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.PrimaryPart.CFrame
+        wait()
+        game:GetService("ReplicatedStorage").Network.Lootbags_Claim:FireServer({ v.Name })
+        wait()
+        task.wait(0.05)
+
+        v.Parent = nil
     end)
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-451, 95, -1400)
 end)
 
 workspace.__THINGS.Orbs.ChildAdded:Connect(function(v)
@@ -126,8 +126,11 @@ TeleportService = game:GetService("TeleportService")
 httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 function hop2()
     local servers = {}
-    local req = httprequest({ Url = string.format(
-    "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", game.PlaceId) })
+    local req = httprequest({
+        Url = string.format(
+            "https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true",
+            game.PlaceId)
+    })
     local body = HttpService:JSONDecode(req.Body)
     if body and body.data then
         for i, v in next, body.data do
@@ -138,7 +141,7 @@ function hop2()
     end
     if #servers > 0 then
         TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)], game.Players
-        .LocalPlayer)
+            .LocalPlayer)
     end
 end
 
@@ -352,7 +355,7 @@ if getMaxArea()[2] >= 54 then
     until game:GetService("Players").LocalPlayer.PlayerGui._MACHINES.Merchant.Enabled
 
 
-    
+
     if timesUp then
         repeat
             local TweenService = game:GetService("TweenService")
@@ -394,27 +397,15 @@ if getMaxArea()[2] >= 54 then
     task.wait(1)
     main()
 
-    workspace.__THINGS.__INSTANCE_CONTAINER.Active.FlowerGarden.Plants.DescendantAdded:Connect(function(v)
-        wait(0.1)
-        pcall(function()
-            if v:IsA("TextLabel") and v.Text == "Ready!" then
-                seedsUsed = seedsUsed + 1
-                if not doingGarden then
-                    main()
-                end
-            end
-        end)
-    end)
-
 
     task.spawn(function()
         while task.wait(10) do
-            for i, v in pairs(workspace.__THINGS.__INSTANCE_CONTAINER.Active.FlowerGarden.Plants:GetDescendants()) do
-                pcall(function()
-                    if v:IsA("TextLabel") and v.Text == "Ready!" and not doingGarden then
+            for i, v in pairs(workspace.__THINGS.__INSTANCE_CONTAINER.Active:GetDescendants()) do
+                if v:IsA("TextLabel") and v.Text == "Ready!" then
+                    if not doingGarden then
                         main()
                     end
-                end)
+                end
             end
         end
     end)
